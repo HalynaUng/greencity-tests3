@@ -1,0 +1,58 @@
+import unittest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
+class TestEventsPage(unittest.TestCase):
+
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        self.driver.get("https://www.greencity.cx.ua/#/greenCity/events")
+        self.wait = WebDriverWait(self.driver, 20)
+
+    def tearDown(self):
+        self.driver.quit()
+
+    def test_filter_events_by_economic_type(self):
+        driver = self.driver
+        wait = self.wait
+
+        
+        dropdown = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//mat-label[contains(.,'Тип події')]/following::mat-select[1]")
+            )
+        )
+        dropdown.click()
+
+        
+        options = wait.until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "mat-option"))
+        )
+
+        
+        option_clicked = False
+        for opt in options:
+            if "Економічний" in opt.text:
+                driver.execute_script("arguments[0].click();", opt)
+                option_clicked = True
+                break
+
+        self.assertTrue(option_clicked, "Не знайдено 'Економічний'")
+
+        
+        active_filter = wait.until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, ".active-filter-container")
+            )
+        )
+
+        self.assertTrue(active_filter.is_displayed(),
+                        "Фільтр не застосувався")
+
+
+if __name__ == "__main__":
+    unittest.main()

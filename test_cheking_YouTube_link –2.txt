@@ -1,0 +1,56 @@
+import unittest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
+class TestYouTubeLink(unittest.TestCase):
+
+    def setUp(self):
+        
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        self.driver.get("https://www.greencity.cx.ua/#/greenCity/about")
+        self.wait = WebDriverWait(self.driver, 10)
+
+    def test_youtube_link_redirect(self):
+        
+
+        driver = self.driver
+
+        
+        self.assertIn("greenCity", driver.current_url)
+
+        
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+        
+        youtube_icon = self.wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, "//img[contains(@src,'youtube')]/ancestor::a")
+            )
+        )
+
+        
+        current_url = driver.current_url
+
+      
+        youtube_icon.click()
+
+        
+        self.wait.until(lambda d: d.current_url != current_url)
+
+        new_url = driver.current_url
+        print("Opened URL:", new_url)
+
+        
+        self.assertIn("youtube", new_url, "BUG: Redirect is not to YouTube")
+
+    def tearDown(self):
+        
+        self.driver.quit()
+
+
+if __name__ == "__main__":
+    unittest.main()

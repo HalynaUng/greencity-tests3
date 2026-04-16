@@ -1,0 +1,37 @@
+import unittest
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+
+class TestHabitSelection(unittest.TestCase):
+
+    def setUp(self):
+        self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
+        self.driver.get("https://www.greencity.cx.ua/#/greenCity/habits")
+        self.wait = WebDriverWait(self.driver, 15)
+
+    def test_habits_page_loads(self):
+        driver = self.driver
+
+        # Перевірка URL
+        self.assertIn("habits", driver.current_url)
+
+        
+        body = self.wait.until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
+
+        
+        self.assertTrue(body.is_displayed(), "Page did not load correctly")
+
+        print("Habits page opened successfully")
+
+    def tearDown(self):
+        self.driver.quit()
+
+
+if __name__ == "__main__":
+    unittest.main()
